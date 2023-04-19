@@ -23,6 +23,11 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
     enable_open_metrics: true
+  otlphttp/hdx:
+    endpoint: 'https://in-otel.hyperdx.io'
+    headers:
+      authorization: '79d68bff-9496-4641-ad3c-bce74f47fa2a'
+    compression: gzip
 
 processors:
   batch:
@@ -46,12 +51,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp, logging, spanmetrics]
+      exporters: [otlp, logging, spanmetrics, otlphttp/hdx]
     metrics:
       receivers: [otlp, spanmetrics]
       processors: [filter, transform, batch]
-      exporters: [prometheus, logging]
+      exporters: [prometheus, logging, otlphttp/hdx]
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging]
+      exporters: [logging, otlphttp/hdx]
