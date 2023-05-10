@@ -273,7 +273,7 @@ services:
           memory: 200M
     restart: unless-stopped
     ports:
-      - "8080:${FRONTEND_PORT}"
+      - "${FRONTEND_PORT}"
     environment:
       - PORT=${FRONTEND_PORT}
       - FRONTEND_ADDR
