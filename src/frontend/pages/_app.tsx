@@ -5,7 +5,7 @@ import '../styles/globals.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import App, { AppContext, AppProps } from 'next/app';
 import { getCookie } from 'cookies-next';
-import HyperDX from '@hyperdx/browser';
+// import HyperDX from '@hyperdx/browser';
 import CurrencyProvider from '../providers/Currency.provider';
 import CartProvider from '../providers/Cart.provider';
 import { ThemeProvider } from 'styled-components';
@@ -22,11 +22,11 @@ declare global {
   }
 }
 
-HyperDX.init({
-  apiKey: '79d68bff-9496-4641-ad3c-bce74f47fa2a',
-  service: 'frontend',
-  tracePropagationTargets: [/api/i], // Set to link traces from frontend to backend requests
-});
+// HyperDX.init({
+//   apiKey: '79d68bff-9496-4641-ad3c-bce74f47fa2a',
+//   service: 'frontend',
+//   tracePropagationTargets: [/api/i], // Set to link traces from frontend to backend requests
+// });
 
 if (typeof window !== 'undefined') {
   const collector = getCookie('otelCollectorUrl')?.toString() || '';
