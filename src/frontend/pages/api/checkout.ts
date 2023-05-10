@@ -19,16 +19,17 @@ const handler = async ({ method, body, query }: NextApiRequest, res: NextApiResp
 
       const productList: IProductCheckoutItem[] = await Promise.all(
         items.map(async ({ item: { productId = '', quantity = 0 } = {}, cost }) => {
-          const product = await ProductCatalogService.getProduct(productId, currencyCode as string);
+          throw new Error('Failed in ProductCatalogService.getProduct');
+          // const product = await ProductCatalogService.getProduct(productId, currencyCode as string);
 
-          return {
-            cost,
-            item: {
-              productId,
-              quantity,
-              product,
-            },
-          };
+          // return {
+          //   cost,
+          //   item: {
+          //     productId,
+          //     quantity,
+          //     product,
+          //   },
+          // };
         })
       );
 
