@@ -22,11 +22,11 @@ declare global {
   }
 }
 
-HyperDX.init({
-  apiKey: '79d68bff-9496-4641-ad3c-bce74f47fa2a',
-  service: 'frontend',
-  tracePropagationTargets: [/api/i], // Set to link traces from frontend to backend requests
-});
+// HyperDX.init({
+//   apiKey: '79d68bff-9496-4641-ad3c-bce74f47fa2a',
+//   service: 'frontend',
+//   tracePropagationTargets: [/api/i], // Set to link traces from frontend to backend requests
+// });
 
 if (typeof window !== 'undefined') {
   const collector = getCookie('otelCollectorUrl')?.toString() || '';
