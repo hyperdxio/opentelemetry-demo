@@ -5,7 +5,7 @@ import '../styles/globals.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import App, { AppContext, AppProps } from 'next/app';
 import { getCookie } from 'cookies-next';
-import HyperDX from '@hyperdx/browser';
+// import HyperDX from '@hyperdx/browser';
 import CurrencyProvider from '../providers/Currency.provider';
 import CartProvider from '../providers/Cart.provider';
 import { ThemeProvider } from 'styled-components';
