@@ -274,7 +274,6 @@ services:
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT}"
-    restart: unless-stopped
     healthcheck:
       test: curl --fail http://localhost:${FRONTEND_PORT} || exit 1
       interval: 30s
