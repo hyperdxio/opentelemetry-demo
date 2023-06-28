@@ -11,7 +11,7 @@ COPY ./src/frontend/package*.json ./
 RUN npm ci
 
 FROM node:18-alpine AS builder
-RUN apk add --no-cache libc6-compat protobuf-dev protoc curl
+RUN apk add --no-cache libc6-compat protobuf-dev protoc
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ./pb ./pb
@@ -22,7 +22,7 @@ RUN npm run build
 
 FROM node:18-alpine AS runner
 WORKDIR /app
-RUN apk add --no-cache protobuf-dev protoc
+RUN apk add --no-cache protobuf-dev protoc curl
 
 ENV NODE_ENV=production
 
