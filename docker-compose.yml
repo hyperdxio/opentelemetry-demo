@@ -1,20 +1,24 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
-
 version: '3.9'
 x-default-logging: &logging
   driver: "json-file"
   options:
     max-size: "5m"
     max-file: "2"
-
 networks:
   default:
     name: opentelemetry-demo
     driver: bridge
-
 services:
+  autoheal:
+    restart: always
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   # ******************
   # Core Demo Services
   # ******************
@@ -44,7 +48,6 @@ services:
       kafka:
         condition: service_healthy
     logging: *logging
-
   # AdService
   adservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-adservice
@@ -72,7 +75,6 @@ services:
     depends_on:
       - otelcol
     logging: *logging
-
   # Cart service
   cartservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-cartservice
@@ -100,7 +102,6 @@ services:
       - redis-cart
       - otelcol
     logging: *logging
-
   # Checkout service
   checkoutservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-checkoutservice
@@ -148,7 +149,6 @@ services:
       kafka:
         condition: service_healthy
     logging: *logging
-
   # Currency service
   currencyservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-currencyservice
@@ -170,11 +170,10 @@ services:
     environment:
       - CURRENCY_SERVICE_PORT
       - OTEL_EXPORTER_OTLP_ENDPOINT
-      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES},service.name=currencyservice   # The C++ SDK does not support OTEL_SERVICE_NAME
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES},service.name=currencyservice # The C++ SDK does not support OTEL_SERVICE_NAME
     depends_on:
       - otelcol
     logging: *logging
-
   # Email service
   emailservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-emailservice
@@ -199,7 +198,6 @@ services:
     depends_on:
       - otelcol
     logging: *logging
-
   # Feature Flag service
   featureflagservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-featureflagservice
@@ -215,8 +213,8 @@ services:
           memory: 175M
     restart: unless-stopped
     ports:
-      - "${FEATURE_FLAG_SERVICE_PORT}"                                  # Feature Flag Service UI
-      - "${FEATURE_FLAG_GRPC_SERVICE_PORT}"                             # Feature Flag Service gRPC API
+      - "${FEATURE_FLAG_SERVICE_PORT}" # Feature Flag Service UI
+      - "${FEATURE_FLAG_GRPC_SERVICE_PORT}" # Feature Flag Service gRPC API
     environment:
       - FEATURE_FLAG_SERVICE_PORT
       - FEATURE_FLAG_GRPC_SERVICE_PORT
@@ -230,7 +228,6 @@ services:
       ffs_postgres:
         condition: service_healthy
     logging: *logging
-
   # Fraud Detection service
   frauddetectionservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-frauddetectionservice
@@ -257,7 +254,6 @@ services:
       kafka:
         condition: service_healthy
     logging: *logging
-
   # Frontend
   frontend:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-frontend
@@ -308,7 +304,6 @@ services:
       - recommendationservice
       - shippingservice
     logging: *logging
-
   # Frontend Proxy (Envoy)
   frontendproxy:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-frontendproxy
@@ -342,7 +337,6 @@ services:
       - featureflagservice
       - loadgenerator
       - grafana
-
   # Load Generator
   loadgenerator:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-loadgenerator
@@ -372,7 +366,6 @@ services:
     depends_on:
       - frontend
     logging: *logging
-
   # Payment service
   paymentservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-paymentservice
@@ -398,7 +391,6 @@ services:
     depends_on:
       - otelcol
     logging: *logging
-
   # Product Catalog service
   productcatalogservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-productcatalogservice
@@ -425,7 +417,6 @@ services:
     depends_on:
       - otelcol
     logging: *logging
-
   # Quote service
   quoteservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-quoteservice
@@ -451,7 +442,6 @@ services:
     depends_on:
       - otelcol
     logging: *logging
-
   # Recommendation service
   recommendationservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-recommendationservice
@@ -464,7 +454,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 500M               # This is high to enable supporting the recommendationCache feature flag use case
+          memory: 500M # This is high to enable supporting the recommendationCache feature flag use case
     restart: unless-stopped
     ports:
       - "${RECOMMENDATION_SERVICE_PORT}"
@@ -483,7 +473,6 @@ services:
       - otelcol
       - featureflagservice
     logging: *logging
-
   # Shipping service
   shippingservice:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-shippingservice
@@ -509,7 +498,6 @@ services:
     depends_on:
       - otelcol
     logging: *logging
-
   # ******************
   # Dependent Services
   # ******************
@@ -533,7 +521,6 @@ services:
       timeout: 5s
       retries: 5
     logging: *logging
-
   # Kafka used by Checkout, Accounting, and Fraud Detection services
   kafka:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-kafka
@@ -562,7 +549,6 @@ services:
       timeout: 10s
       retries: 10
     logging: *logging
-
   # Redis used by Cart service
   redis-cart:
     image: redis:alpine
@@ -576,8 +562,6 @@ services:
     ports:
       - "${REDIS_PORT}"
     logging: *logging
-
-
   # ********************
   # Telemetry Components
   # ********************
@@ -598,13 +582,12 @@ services:
           memory: 300M
     restart: unless-stopped
     ports:
-      - "${JAEGER_SERVICE_PORT}"                    # Jaeger UI
-      - "4317"                           # OTLP gRPC default port
+      - "${JAEGER_SERVICE_PORT}" # Jaeger UI
+      - "4317" # OTLP gRPC default port
     environment:
       - COLLECTOR_OTLP_ENABLED=true
       - METRICS_STORAGE_TYPE=prometheus
     logging: *logging
-
   # Grafana
   grafana:
     image: grafana/grafana:9.4.7
@@ -619,7 +602,6 @@ services:
     ports:
       - "${GRAFANA_SERVICE_PORT}"
     logging: *logging
-
   # OpenTelemetry Collector
   otelcol:
     image: otel/opentelemetry-collector-contrib:0.75.0
@@ -629,19 +611,18 @@ services:
         limits:
           memory: 125M
     restart: unless-stopped
-    command: [ "--feature-gates=service.connectors", "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
+    command: ["--feature-gates=service.connectors", "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml"]
     volumes:
       - ./src/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
       - ./src/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
     ports:
-      - "4317"          # OTLP over gRPC receiver
-      - "4318:4318"     # OTLP over HTTP receiver
-      - "9464"          # Prometheus exporter
-      - "8888"          # metrics endpoint
+      - "4317" # OTLP over gRPC receiver
+      - "4318:4318" # OTLP over HTTP receiver
+      - "9464" # Prometheus exporter
+      - "8888" # metrics endpoint
     depends_on:
       - jaeger
     logging: *logging
-
   # Prometheus
   prometheus:
     image: quay.io/prometheus/prometheus:v2.43.0
@@ -664,7 +645,6 @@ services:
     ports:
       - "${PROMETHEUS_SERVICE_PORT}:${PROMETHEUS_SERVICE_PORT}"
     logging: *logging
-
   # *****
   # Tests
   # *****
@@ -686,7 +666,6 @@ services:
       - NODE_ENV=production
     depends_on:
       - frontend
-
   # Integration Tests
   integrationTests:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}-integrationTests
