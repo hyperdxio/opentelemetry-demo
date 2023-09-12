@@ -23,7 +23,7 @@ declare global {
 }
 
 HyperDX.init({
-  apiKey: '<REPLACE_YOUR_API_KEY>',
+  apiKey: '<YOUR_API_KEY_HERE>',
   service: 'frontend',
   tracePropagationTargets: [/api/i], // Set to link traces from frontend to backend requests
 });
